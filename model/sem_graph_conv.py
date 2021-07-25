@@ -16,11 +16,15 @@ class SemGraphConv(nn.Module):
         super(SemGraphConv, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
-
-        self.W = nn.Parameter(torch.zeros(size=(2, in_features, out_features), dtype=torch.float))
+        
+        ### W can be seen as two projection matrices.
+        self.W = nn.Parameter(torch.zeros(size=(2, in_features, out_features), dtype=torch.float)) # [2,in_feat,out_feat]
         nn.init.xavier_uniform_(self.W.data, gain=1.414)
-
-        self.adj = adj
+        
+        ### used for message passing.
+        self.adj = adj 
+        
+        ### MASK
         self.m = (self.adj > 0)
         self.e = nn.Parameter(torch.zeros(1, len(self.m.nonzero()), dtype=torch.float))
         nn.init.constant_(self.e.data, 1)
@@ -44,6 +48,7 @@ class SemGraphConv(nn.Module):
 
         M = torch.eye(adj.size(0), dtype=torch.float).to(input.device)
 
+        ### Message passing
         output = torch.matmul(adj * M, h0) + torch.matmul(adj * (1 - M), h1)
 
         if self.bias is not None:
@@ -57,6 +62,11 @@ class SemGraphConv(nn.Module):
 
 class LocalGraph(nn.Module):
     def __init__(self, adj, input_dim, output_dim, dropout=None):
+        
+        """
+        Define adjacency matrix for each case
+         
+        """
         super(LocalGraph, self).__init__()
 
         num_joints = adj.shape[0]

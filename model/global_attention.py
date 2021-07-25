@@ -29,12 +29,19 @@ class GlobalGraph(nn.Module):
 
         self.g = nn.Conv1d(in_channels=self.in_channels, out_channels=self.g_channels,
                            kernel_size=1, stride=1, padding=0)
+        
+        #### USED FOR COmPUTING B_k ########
         self.theta = nn.Conv1d(in_channels=self.in_channels, out_channels=self.inter_channels,
                                kernel_size=1, stride=1, padding=0)
         self.phi = nn.Conv1d(in_channels=self.in_channels, out_channels=self.inter_channels,
                              kernel_size=1, stride=1, padding=0)
+        #############################
 
         adj_shape = self.adj.shape
+        
+        
+        ##### C_k, unlike B_k we do not take in to account
+        ### correlations between node features ######
         self.C_k = nn.Parameter(torch.zeros(adj_shape, dtype=torch.float))
 
         self.concat_project = nn.Sequential(

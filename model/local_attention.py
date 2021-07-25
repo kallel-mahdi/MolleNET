@@ -10,7 +10,17 @@ import numpy as np
 class SemCHGraphConv(nn.Module):
     """
     Semantic channel-wise graph convolution layer
+    
+    ROLE (to be confirmed): In  the original SemGraphConv we end up mixing the channels for all points.
+    
+    Here thes authors create a slight variant that treats each channel independently for each point.
+    
+    
+    For example if each joint had 3 channels, this is like having the same SemGCN perform the same operations
+    but on different channels :DD
     """
+    
+    
 
     def __init__(self, in_features, out_features, adj, bias=False):
         super(SemCHGraphConv, self).__init__()
